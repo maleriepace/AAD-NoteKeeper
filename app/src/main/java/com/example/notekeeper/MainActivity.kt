@@ -9,6 +9,7 @@ import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.app.NotificationManagerCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.Observer
@@ -51,8 +52,6 @@ class MainActivity : AppCompatActivity() {
 
         }
 
-        //NoteKeeperDatabase.getDatabase(application, CoroutineScope(Dispatchers.Main)).courseInfoDao().getCourses()
-
         PreferenceManager.setDefaultValues(this, R.xml.general_preferences, false)
 
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
@@ -90,6 +89,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         initializeDisplayContent()
+
+        Notifications().createNotificationChannel(this, NotificationManagerCompat.IMPORTANCE_DEFAULT, false, getString(R.string.app_name), "App notification channel")
     }
 
     private fun handleShare() {

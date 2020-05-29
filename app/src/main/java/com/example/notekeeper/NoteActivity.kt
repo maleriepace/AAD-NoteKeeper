@@ -173,12 +173,28 @@ class NoteActivity : AppCompatActivity() {
             R.id.action_next -> {
                 moveNext()
             }
+            R.id.action_set_reminder -> {
+                showReminderNotification()
+            }
             R.id.action_cancel -> {
                 isCanceling = true
                 finish()
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun showReminderNotification() {
+
+        if(note != null) {
+            Notifications().createNotification(
+                this,
+                note!!.noteTitle,
+                note!!.noteText,
+                true,
+                note!!.id
+            )
+        }
     }
 
     private fun moveNext() {

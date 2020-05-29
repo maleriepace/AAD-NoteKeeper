@@ -1,5 +1,6 @@
 package com.example.notekeeper.database
 
+import android.database.Cursor
 import androidx.lifecycle.LiveData
 import androidx.room.*
 
@@ -7,6 +8,9 @@ import androidx.room.*
 interface NoteInfoDao {
     @Query("SELECT note_info.*, course_info.course_title from note_info JOIN course_info ON course_info.course_id = note_info.course_id ORDER BY course_id ASC, note_title ASC")
     fun getNoteCourses(): LiveData<List<NoteCourse>>
+
+    @Query("SELECT note_info.*, course_info.course_title from note_info JOIN course_info ON course_info.course_id = note_info.course_id ORDER BY course_id ASC, note_title ASC")
+    fun getNoteCoursesCursor(): Cursor
 
     @Query("SELECT * from note_info ORDER BY course_id ASC, note_title ASC")
     fun getNotes(): LiveData<List<NoteInfo>>

@@ -8,7 +8,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-@Database(entities= arrayOf(CourseInfo::class, NoteInfo::class), version= 2, exportSchema = false)
+@Database(entities= arrayOf(CourseInfo::class, NoteInfo::class), version= 1, exportSchema = false)
 abstract class NoteKeeperDatabase : RoomDatabase() {
     abstract fun courseInfoDao() : CourseInfoDao
     abstract fun noteInfoDao() : NoteInfoDao
@@ -17,21 +17,25 @@ abstract class NoteKeeperDatabase : RoomDatabase() {
         @Volatile
         private var INSTANCE: NoteKeeperDatabase? = null
 
-        fun getDatabase(context: Context, scope: CoroutineScope): NoteKeeperDatabase {
+        fun getDatabase(context: Context, scope: CoroutineScope?): NoteKeeperDatabase {
             val tempInstance =
                 INSTANCE
             if(tempInstance != null){
                 return tempInstance
             }
             synchronized(this){
-                val instance = Room.databaseBuilder(
+                val builder = Room.databaseBuilder(
                     context.applicationContext,
                     NoteKeeperDatabase::class.java,
-                    "NoteKeeper.db").addCallback(
-                    NoteKeeperDatabaseCallback(
-                        scope
+                    "NoteKeeper.db");
+                if(scope != null){
+                    builder.addCallback(
+                        NoteKeeperDatabaseCallback(
+                            scope!!
+                        )
                     )
-                ).build()
+                }
+                val instance = builder.build()
                 INSTANCE = instance
                 return instance
             }
