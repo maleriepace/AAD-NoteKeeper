@@ -1,20 +1,31 @@
 package com.example.notekeeper
 
+import android.content.ContentValues
 import android.content.Intent
 import android.net.Uri
+import android.os.AsyncTask
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.ArrayAdapter
+import android.widget.ProgressBar
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
+import androidx.lifecycle.whenStarted
 import com.example.notekeeper.database.CourseInfo
 import com.example.notekeeper.database.NoteInfo
 import com.example.notekeeper.notes.NoteActivityViewModel
-
 import kotlinx.android.synthetic.main.activity_note.*
 import kotlinx.android.synthetic.main.content_note.*
+import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.sendBlocking
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.FlowCollector
+import kotlinx.coroutines.flow.flow
 
 class NoteActivity : AppCompatActivity() {
     private val viewModel: NoteActivityViewModel by viewModels()
@@ -110,7 +121,7 @@ class NoteActivity : AppCompatActivity() {
                 storePreviousNoteValues()
             }
         }else{
-            saveNote()
+            runBlocking { saveNote() }
         }
     }
 
@@ -128,14 +139,18 @@ class NoteActivity : AppCompatActivity() {
 //        note?.text = viewModel.originalNoteText
     }
 
-    private fun saveNote() {
+    private suspend fun saveNote() = withContext(Dispatchers.IO) {
+
+        Log.d("TAG", "thread: ${Thread.currentThread().id}")
+
+
         var course = spinner_courses.selectedItem as CourseInfo
-        if(note != null) {
+        if (note != null) {
             note?.courseId = course?.courseId
             note?.noteTitle = text_note_title.text.toString()
             note?.noteText = text_note_text.text.toString()
             viewModel.update(note!!)
-        }else {
+        } else {
             viewModel.insert(
                 NoteInfo(
                     course?.courseId,
@@ -144,6 +159,7 @@ class NoteActivity : AppCompatActivity() {
                 )
             )
         }
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -198,7 +214,8 @@ class NoteActivity : AppCompatActivity() {
     }
 
     private fun moveNext() {
-        saveNote()
+        runBlocking { saveNote() }
+        Log.d("TAG", "done")
 
         var index = viewModel.allNotes.value?.indexOf(note)
         if (index != null) {

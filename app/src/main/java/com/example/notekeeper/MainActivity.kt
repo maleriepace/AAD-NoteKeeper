@@ -2,6 +2,7 @@ package com.example.notekeeper
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.StrictMode
 import android.preference.PreferenceManager
 import android.view.Menu
 import android.view.MenuItem
@@ -46,13 +47,17 @@ class MainActivity : AppCompatActivity() {
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
 
+        enableStrictMode()
+
         val fab: FloatingActionButton = findViewById(R.id.fab)
         fab.setOnClickListener { view ->
             startActivity(Intent(this@MainActivity, NoteActivity::class.java))
 
         }
 
-        PreferenceManager.setDefaultValues(this, R.xml.general_preferences, false)
+        Thread {
+            PreferenceManager.setDefaultValues(this, R.xml.general_preferences, false)
+        }
 
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
         val navView: NavigationView = findViewById(R.id.nav_view)
@@ -91,6 +96,17 @@ class MainActivity : AppCompatActivity() {
         initializeDisplayContent()
 
         Notifications().createNotificationChannel(this, NotificationManagerCompat.IMPORTANCE_DEFAULT, false, getString(R.string.app_name), "App notification channel")
+    }
+
+    private fun enableStrictMode() {
+        if (BuildConfig.DEBUG) {
+            var policy = StrictMode.ThreadPolicy.Builder()
+                .detectAll()
+                .penaltyLog()
+                .build()
+
+            StrictMode.setThreadPolicy(policy)
+        }
     }
 
     private fun handleShare() {
@@ -159,12 +175,14 @@ class MainActivity : AppCompatActivity() {
         var textUserName = headerView.findViewById<TextView>(R.id.text_user_name)
         var textEmailAddress = headerView.findViewById<TextView>(R.id.text_email_address)
 
-        var pref = PreferenceManager.getDefaultSharedPreferences(this)
-        var userName = pref.getString("user_display_name", "")
-        var emailAddress = pref.getString("user_email_address", "")
+        Thread {
+            var pref = PreferenceManager.getDefaultSharedPreferences(this)
+            var userName = pref.getString("user_display_name", "")
+            var emailAddress = pref.getString("user_email_address", "")
 
-        textUserName.text = userName
-        textEmailAddress.text = emailAddress
+            textUserName.text = userName
+            textEmailAddress.text = emailAddress
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
