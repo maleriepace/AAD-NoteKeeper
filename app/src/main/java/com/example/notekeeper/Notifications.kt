@@ -28,6 +28,9 @@ class Notifications {
         var noteActivityIntent = Intent(context, NoteActivity::class.java)
         noteActivityIntent.putExtra(NoteActivity.NOTE_ID, noteId)
 
+        var backupServiceIntent = Intent(context, NoteBackupService::class.java)
+        backupServiceIntent.putExtra(NoteBackupService.EXTRA_COURSE_ID, "")
+
         val notificationBuilder = NotificationCompat.Builder(context, channelId).apply {
             setSmallIcon(R.drawable.ic_menu_camera)
             setStyle(NotificationCompat.BigTextStyle().bigText(message).setBigContentTitle(title).setSummaryText("Review Note"))
@@ -37,6 +40,7 @@ class Notifications {
             setAutoCancel(autoCancel)
             setContentIntent(PendingIntent.getActivity(context, 0, noteActivityIntent, PendingIntent.FLAG_UPDATE_CURRENT))
             addAction(0, "View all notes", PendingIntent.getActivity(context, 0, Intent(context, MainActivity::class.java), PendingIntent.FLAG_UPDATE_CURRENT))
+            addAction(0, "Backup notes", PendingIntent.getService(context, 0, backupServiceIntent, PendingIntent.FLAG_UPDATE_CURRENT))
         }
 
         val notificationManager = NotificationManagerCompat.from(context)
