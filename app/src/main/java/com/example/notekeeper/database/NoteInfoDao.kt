@@ -15,6 +15,9 @@ interface NoteInfoDao {
     @Query("SELECT * from note_info ORDER BY course_id ASC, note_title ASC")
     fun getNotes(): LiveData<List<NoteInfo>>
 
+    @Query("SELECT * from note_info ORDER BY course_id ASC, note_title ASC")
+    fun getNotesNotLive(): List<NoteInfo>
+
     data class NoteCourse(
         @ColumnInfo(name="id") var id: Int,
         @ColumnInfo(name="course_id") var courseId: String,

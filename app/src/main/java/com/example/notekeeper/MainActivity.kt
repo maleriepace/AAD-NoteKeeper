@@ -197,8 +197,17 @@ class MainActivity : AppCompatActivity() {
                 startActivity(Intent(this, SettingsActivity::class.java))
                 return true
             }
+            R.id.action_backup_notes -> {
+                backupNotes()
+            }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun backupNotes() {
+        val intent = Intent(this, NoteBackupService::class.java)
+        intent.putExtra(NoteBackupService.EXTRA_COURSE_ID, "")
+        startService(intent)
     }
 
     override fun onSupportNavigateUp(): Boolean {

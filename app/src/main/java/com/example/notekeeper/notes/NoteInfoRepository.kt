@@ -18,4 +18,8 @@ class NoteInfoRepository(private val noteInfoDao: NoteInfoDao) {
     fun getNote(id: Int): LiveData<NoteInfo> {
         return noteInfoDao.getNote(id)
     }
+
+    fun getNotesNotLive() : List<NoteInfo> {
+        return noteInfoDao.getNotesNotLive()
+    }
 }
